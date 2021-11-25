@@ -3,20 +3,21 @@
 BLEService carService("180F");
 
 
-BLECharacteristic carInfoChar("2A19", BLERead, 12, sizeof(12));
-BLECharCharacteristic carSteerChar("2A20", BLEWrite);
-BLECharCharacteristic carDriveChar("2A21", BLEWrite);
+BLEIntCharacteristic carInfoChar("2A19", BLERead | BLENotify);
+BLEIntCharacteristic carSteerChar("2A20", BLEWrite);
+BLEShortCharacteristic carDriveChar("2A21", BLEWrite);
 
 
 
-short OldDriveScale = 0; // 0 - 11 där 0 - 4 är bakåt, 5 är stilla och 6 - 11 är framåt.
-//char OldCarInfo[8] = ["0000000"];
-char oldCarInfo[] = { '0', '0', '0', '0', '0', '0', '0', '0', '\0' };
+short OldDriveScale = 5; // 0 - 11 där 0 - 4 är bakåt, 5 är stilla och 6 - 11 är framåt.
+int oldSteerScale = 15; // 0 - 14 är att svänga till vänster, 15 är att stå still och 16 - 31 är att svänga höger.
+
+int oldCarInfo = 100000000;
 
 void setup() {
   if (BLE.begin()) {
-      
-    }
+
+  }
 
   BLE.setLocalName("Car-Captain");
   BLE.setAdvertisedService(carService); //Add the service uuid
@@ -25,6 +26,16 @@ void setup() {
   carService.addCharacteristic(carInfoChar);
   carService.addCharacteristic(carSteerChar);
   carService.addCharacteristic(carDriveChar);
+
+  //Add the car service
+  BLE.addService(carService);
+
+  //Set defaults for the characteristics. In this case the safests
+
+  carInfoChar.writeValue(oldCarInfo);
+  carDriveChar.writeValue(OldDriveScale);
+  carSteerChar.writeValue(oldSteerScale);
+
 
 }
 
