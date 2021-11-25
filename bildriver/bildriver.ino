@@ -37,8 +37,16 @@ void setup() {
   carSteerChar.writeValue(oldSteerScale);
 
 
+  BLE.advertise(),
 }
-
+bool con = false;
 void loop() {
+    
+  //wait for a connection
+  BLEDevice central = BLE.central();
+
+  if (central) {
+      
+    }
 
 }
