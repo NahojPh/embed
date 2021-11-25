@@ -6,9 +6,18 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        color: Theme.of(context).colorScheme.background,
+    return Container(
+      color: Theme.of(context).colorScheme.background,
+
+      child: Column(
+        children: [
+          Row( //Top row for the connection status bar and maybe the temp
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              
+            ],
+          )
+        ],
       ),
     );
   }

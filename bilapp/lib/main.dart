@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+ import 'package:flutter/services.dart';
 
 import 'package:bilapp/views/home.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft,DeviceOrientation.landscapeRight]);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: const Home(),
     title: "Car Controller",
     theme: ThemeData(
