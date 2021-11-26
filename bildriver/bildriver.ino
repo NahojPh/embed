@@ -15,8 +15,8 @@ int oldSteerScale = 15; // 0 - 14 är att svänga till vänster, 15 är att stå
 int oldCarInfo = 100000000;
 
 void setup() {
-  if (BLE.begin()) {
-
+  if (!BLE.begin()) {
+    
   }
 
   BLE.setLocalName("Car-Captain");
@@ -37,16 +37,27 @@ void setup() {
   carSteerChar.writeValue(oldSteerScale);
 
 
-  BLE.advertise(),
+  BLE.advertise();
 }
 bool con = false;
 void loop() {
-    
-  //wait for a connection
-  BLEDevice central = BLE.central();
 
-  if (central) {
-      
-    }
+  //Poll for events
+  BLE.poll();
+
+  if (carDriveChar.written()) {
+      if (carDriveChar.value() < 5) { // If controler makes a backwards move
+        
+       }
+       else if (carDriveChar.value() > 5) { // If controler makes a stop
+         
+       }
+       else { // If controler makes a forward move
+           
+       }
+    } 
+    
+  
+    
 
 }
