@@ -14,7 +14,7 @@ linker = "cc"
 
 
 [dependencies]
-bluer = "0.13.0"
+bluer = "0.13.1"
 futures = "0.3.18"
 tokio = "1.14.0"
 
