@@ -1,2 +1,2 @@
-scp C:\Users\NahojPh\Desktop\embed\bildriver/main.py pi@192.168.1.123:/home/pi
-ssh pi@192.168.1.123 python3 ~/main.py
+scp C:\Users\NahojPh\Desktop\embed\bildriver\target\armv7-unknown-linux-gnueabihf\debug\bildriver ubuntu@192.168.1.123:/home/ubuntu
+ssh ubuntu@192.168.1.123 chmod +x ~/bildriver && ~/bildriver
