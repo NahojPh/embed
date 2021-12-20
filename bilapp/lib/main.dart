@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
  import 'package:flutter/services.dart';
 
 import 'package:bilapp/views/home.dart';
+import 'package:bilapp/views/scanner.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +11,7 @@ void main() {
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: const Home(),
+    home: const Scanner(),
     title: "Car Controller",
     theme: ThemeData(
       brightness: Brightness.light,

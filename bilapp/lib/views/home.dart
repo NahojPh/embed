@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
 
 
-class Home extends StatelessWidget {
+
+
+class Home extends StatefulWidget {  
   const Home({ Key? key }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.background,
+  State<Home> createState() => _HomeState();
+}
 
-      child: Column(
-        children: [
-          Row( //Top row for the connection status bar and maybe the temp
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              
-            ],
-          )
-        ],
+class _HomeState extends State<Home> {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        color: Theme.of(context).colorScheme.background,
+    
+        child: Column(
+          children: [
+            Row( //Top row for the connection status bar and maybe the temp
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
