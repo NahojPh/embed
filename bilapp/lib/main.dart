@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
  import 'package:flutter/services.dart';
 
@@ -11,7 +13,6 @@ void main() {
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: const Scanner(),
     title: "Car Controller",
     theme: ThemeData(
       brightness: Brightness.light,
@@ -20,10 +21,16 @@ void main() {
       primaryColorDark: const Color(0xFF263238),
       secondaryHeaderColor: const Color(0xFF388E3C),
       //secondaryHeaderColorDark: const Color(0xFF1B5E20),
+
+
       
 
 
       fontFamily: "Outfit",
     ),
+    routes: {
+      "/": (context) => const Home(),
+      "/scanner": (context) => const Scanner(),
+    },
   ));
 }

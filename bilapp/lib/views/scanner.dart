@@ -1,3 +1,4 @@
+import 'package:bilapp/widgets/bt_connect_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -10,23 +11,23 @@ class Scanner extends StatefulWidget {
   @override
   _ScannerState createState() => _ScannerState();
 }
-  
-    @override
-    initState() {
-      
-      Future.delayed(Duration.zero).then((value) async {
-        ;
-        
-                
-      });
-      
-    }
 
 class _ScannerState extends State<Scanner> {
+
+  @override
+  void initState() {
+    flutterBlue.startScan(timeout: const Duration(seconds: 2));
+    super.initState();
+  }
+  @override
+  void dispose() {
+    flutterBlue.stopScan();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     //Future.delayed(Duration(seconds: 5)).then((value) => flutterBlue.startScan(timeout: const Duration(seconds: 2)));
-    flutterBlue.startScan(timeout: const Duration(seconds: 2));
     return Scaffold(
       body: Container(
        color: Theme.of(context).colorScheme.background,
@@ -42,20 +43,21 @@ class _ScannerState extends State<Scanner> {
                ),
              ),
            ),
+           const SizedBox(height: 25),
            StreamBuilder<List<ScanResult>>(
              stream: flutterBlue.scanResults, 
-             initialData: [],
+             initialData: const [],
              
              builder: (context, snapshot) {
                List<Widget> devices = [];
 
                 for (ScanResult r in snapshot.data!) {
-                  devices += [Text(r.rssi.toString())];
+                  devices += [DevicePicker(r)];
                 }
 
                
               return Container(
-                color: Colors.red,
+                color: Colors.transparent,
                 height: 300,
                 width: 400,
                 child: ListView(

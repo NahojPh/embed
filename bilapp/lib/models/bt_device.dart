@@ -1,5 +1,5 @@
 
-import 'package:flutter/cupertino.dart';
+
 
 class BtDevice {
   final String? adress;
