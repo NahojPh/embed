@@ -25,9 +25,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "bluer"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56ad0e151d769e6009b612c0bcba635a0e3d714d0d0f6ff55ff3f064ca373aa0"
+checksum = "ec0210212d5ba6fcb3c668d4942ba3cbfd6b2cf3c987c42876ba97eb9c8cd039"
 dependencies = [
  "custom_debug",
  "dbus",
