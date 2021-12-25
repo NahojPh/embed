@@ -1,7 +1,5 @@
 //! Serves a Bluetooth GATT echo server.
 
-pub mod implementations;
-
 use bluer::{
     adv::Advertisement,
     gatt::{
@@ -43,7 +41,6 @@ async fn main() -> bluer::Result<()> {
         ..Default::default()
     };
 
-    env_logger::init();
     let session = bluer::Session::new().await?;
     let adapter_names = session.adapter_names().await?;
     let adapter_name = adapter_names.first().expect("No Bluetooth adapter present");

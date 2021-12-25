@@ -16,6 +16,6 @@ linker = "cc"
 [dependencies]
 bluer = { version = "0.13.1", features = ["bluetoothd"] }
 futures = "0.3.18"
-tokio = { version = "1.14.0", features = ["rt-multi-thread"] }
+tokio = { version = "1.14.0", features = ["rt-multi-thread", "io-std"] }
 
 #wiringpi = "0.2.4"
