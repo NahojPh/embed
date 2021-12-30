@@ -40,8 +40,10 @@ async fn main() -> bluer::Result<()> {
         control_handle: char_handle,
         ..Default::default()
     };
-
+    //Creates a connection session with the bluetooth daemon.
     let session = bluer::Session::new().await?;
+
+    //Finds the first adapter and initialize a interface with it then powering it on.
     let adapter_names = session.adapter_names().await?;
     let adapter_name = adapter_names.first().expect("No Bluetooth adapter present");
     let adapter = session.adapter(adapter_name)?;
@@ -54,11 +56,16 @@ async fn main() -> bluer::Result<()> {
         local_name: Some("Bil driver".to_string()),
         ..Default::default()
     };
-    let adv_handle = adapter.advertise(le_advertisement).await?;
+    //Creates an advertise object and starts advertise incase it finds a valid le_advertisement.
+    let adv_handle = adapter.advertise(le_advertisement).await
+        .expect("Could not advertise the le_advertisement object.");
+        
+    
 
-    println!("Serving GATT echo service on Bluetooth adapter {}", &adapter_name);
+    println!("Serving Bil driver service on Bluetooth adapter {}", &adapter_name);
     let (char_control, char_handle) = characteristic_control();
     
+    //Creates the primary GATT Application to hold and handle the characteristics.
     let app = Application {
         services: vec![Service {
             uuid: SERVICE_UUID,
@@ -72,7 +79,8 @@ async fn main() -> bluer::Result<()> {
     };
     let app_handle = adapter.serve_gatt_application(app).await?;
 
-    println!("Echo service ready. Press enter to quit.");
+    //Makes way to exit the application when enter is pressed.
+    println!("Bil driver service is ready. Press enter to quit.");
     let stdin = BufReader::new(tokio::io::stdin());
     let mut lines = stdin.lines();
 
@@ -89,7 +97,11 @@ async fn main() -> bluer::Result<()> {
                     Some(CharacteristicControlEvent::Write(req)) => {
                         println!("Accepting write request event with MTU {}", req.mtu());
                         read_buf = vec![0; req.mtu()];
+                        //reader_opt is an Option<CharacteristicReader> with impl to retrive characteristics data.
                         reader_opt = Some(req.accept()?);
+                        
+
+                        
                     },
                     Some(CharacteristicControlEvent::Notify(notifier)) => {
                         println!("Accepting notify request event with MTU {}", notifier.mtu());
