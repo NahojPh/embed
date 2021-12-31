@@ -28,18 +28,6 @@ const CHARACTERISTIC_UUID: uuid::Uuid = uuid::Uuid::from_u128(0xF00DC0DE00002);
 #[tokio::main]
 async fn main() -> bluer::Result<()> {
 
-    let drive_char = Characteristic {
-        uuid: uuid::Uuid::from_u128(0xF00DC0DE00002),
-        write: Some(CharacteristicWrite {
-            write: true,
-            write_without_response: true,
-            method: CharacteristicWriteMethod::Io,
-
-            ..Default::default()
-        }),
-        control_handle: char_handle,
-        ..Default::default()
-    };
     //Creates a connection session with the bluetooth daemon.
     let session = bluer::Session::new().await?;
 
@@ -64,6 +52,20 @@ async fn main() -> bluer::Result<()> {
 
     println!("Serving Bil driver service on Bluetooth adapter {}", &adapter_name);
     let (char_control, char_handle) = characteristic_control();
+
+    //Creates a write characteristic.
+    let drive_char = Characteristic {
+        uuid: uuid::Uuid::from_u128(0xF00DC0DE00002),
+        write: Some(CharacteristicWrite {
+            write: true,
+            write_without_response: true,
+            method: CharacteristicWriteMethod::Io,
+
+            ..Default::default()
+        }),
+        control_handle: char_handle,
+        ..Default::default()
+    };
     
     //Creates the primary GATT Application to hold and handle the characteristics.
     let app = Application {
