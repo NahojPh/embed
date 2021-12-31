@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
+import 'dart:convert';
+
 FlutterBlue flutterBlue = FlutterBlue.instance;
 
 class DevicePicker extends StatefulWidget {
@@ -12,7 +14,7 @@ class DevicePicker extends StatefulWidget {
 }
 
 class _DevicePickerState extends State<DevicePicker> {
-  String errorMessage = "";
+  
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -28,13 +30,23 @@ class _DevicePickerState extends State<DevicePicker> {
           if (widget.scanResult.advertisementData.connectable) {
             await widget.scanResult.device.connect()
             .onError((error, stackTrace) {
-              setState(() {
-                errorMessage = error.toString();
-              });
-            }).then((value) {
-              setState(() {
-                errorMessage = "";
-              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Could not connect to ${widget.scanResult.device.name}")
+                )
+              );
+            }).then((value) async {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Connected to ${widget.scanResult.device.name}")
+                ),
+              );
+              /*
+              var servs = await widget.scanResult.device.discoverServices();
+              var val = await servs.first.characteristics.first.read();
+              print(utf8.decode(val));
+              */
+              Navigator.popAndPushNamed(context, "/home");
             });
           }
 
@@ -48,15 +60,6 @@ class _DevicePickerState extends State<DevicePicker> {
                 fontSize: 16,
               ),
             ),
-            
-            errorMessage != "" ? Text(
-              errorMessage,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 13,
-              ),
-
-            ) : const SizedBox(),
 
             rssiInciationLight(widget.scanResult.rssi),
             //Text(scanResult.rssi.toString()),

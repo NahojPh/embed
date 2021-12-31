@@ -29,7 +29,8 @@ void main() {
       fontFamily: "Outfit",
     ),
     routes: {
-      "/": (context) => const Home(),
+      "/": (context) => const Scanner(),
+      "/home": (context) => const Home(),
       "/scanner": (context) => const Scanner(),
     },
   ));
