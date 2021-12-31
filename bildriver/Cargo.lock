@@ -15,6 +15,7 @@ dependencies = [
  "bluer",
  "futures",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
