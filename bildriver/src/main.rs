@@ -1,4 +1,4 @@
-//! Serves a Bluetooth GATT echo server.
+#![allow(unused_imports)]
 
 use bluer::{
     adv::Advertisement,
@@ -59,7 +59,15 @@ async fn main() -> bluer::Result<()> {
         write: Some(CharacteristicWrite {
             write: true,
             write_without_response: true,
-            method: CharacteristicWriteMethod::Io,
+            method: CharacteristicWriteMethod::Fun(|req| async {
+                let read_buffer = vec![u8; req.mtu()];
+                reader_opt = req.accept();
+
+
+                reader_opt.recv(read_buffer).unwrap();
+                println!("{:?}", read_buffer);
+                Ok(())
+            }),
 
             ..Default::default()
         }),
@@ -67,6 +75,27 @@ async fn main() -> bluer::Result<()> {
         ..Default::default()
     };
     
+    //Creates the steer characteristic with a write method.
+    let steer_char = Characteristic {
+        uuid: uuid::Uuid::from_u128(0xF00DC0DE00001),
+        write: Some(CharacteristicWrite {
+            write: true,
+            write_without_response: true,
+            method: CharacteristicWriteMethod::Fun(|req| {
+                let read_buffer = vec![u8; req.mtu()];
+                reader_opt = req.accept();
+
+
+                reader_opt.recv(read_buffer).unwrap();
+                println!("{:?}", read_buffer);
+                Ok(())
+            }),
+
+            ..Default::default()
+        }),
+        control_handle: char_handle,
+        ..Default::default()
+    };
     //Creates the primary GATT Application to hold and handle the characteristics.
     let app = Application {
         services: vec![Service {
@@ -89,8 +118,11 @@ async fn main() -> bluer::Result<()> {
     let mut read_buf = Vec::new();
     let mut reader_opt: Option<CharacteristicReader> = None;
     let mut writer_opt: Option<CharacteristicWriter> = None;
+    
     pin_mut!(char_control);
-
+    
+    
+    /*
     loop {
         tokio::select! {
             _ = lines.next_line() => break,
@@ -142,7 +174,7 @@ async fn main() -> bluer::Result<()> {
             }
         }
     }
-
+*/
     println!("Removing service and advertisement");
     drop(app_handle);
     drop(adv_handle);
