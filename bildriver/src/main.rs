@@ -59,7 +59,7 @@ async fn main() -> bluer::Result<()> {
         write: Some(CharacteristicWrite {
             write: true,
             write_without_response: true,
-            method: CharacteristicWriteMethod::Fun(|req| async {
+            method: CharacteristicWriteMethod::Fun(|req: CharacteristicReader | {
                 let read_buffer = vec![0; req.mtu()];
                 let reader_opt = req.accept();
 
@@ -81,7 +81,7 @@ async fn main() -> bluer::Result<()> {
         write: Some(CharacteristicWrite {
             write: true,
             write_without_response: true,
-            method: CharacteristicWriteMethod::Fun(|req| {
+            method: CharacteristicWriteMethod::Fun(|req: CharacteristicReader| {
                 let read_buffer = vec![0; req.mtu()];
                 let reader_opt = req.accept();
 
