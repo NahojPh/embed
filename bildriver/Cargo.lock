@@ -16,6 +16,7 @@ dependencies = [
  "futures",
  "tokio",
  "uuid",
+ "wiringpi",
 ]
 
 [[package]]
@@ -233,6 +234,12 @@ dependencies = [
  "libc",
  "wasi",
 ]
+
+[[package]]
+name = "glob"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8be18de09a56b60ed0edf84bc9df007e30040691af7acd1c41874faac5895bfb"
 
 [[package]]
 name = "heck"
@@ -612,3 +619,14 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
+
+[[package]]
+name = "wiringpi"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3e065de8885b0ae1e1928eb3bf905c7d0a0a28ceab823852e9ffe123a126f3d"
+dependencies = [
+ "cc",
+ "glob",
+ "libc",
+]

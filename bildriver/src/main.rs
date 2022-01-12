@@ -124,7 +124,6 @@ async fn main() -> bluer::Result<()> {
     pin_mut!(char_control);
     
     
-    /*
     loop {
         tokio::select! {
             _ = lines.next_line() => break,
@@ -134,16 +133,18 @@ async fn main() -> bluer::Result<()> {
                         println!("Accepting write request event with MTU {}", req.mtu());
                         read_buf = vec![0; req.mtu()];
                         //reader_opt is an Option<CharacteristicReader> with impl to retrive characteristics data.
+                        //Accepts the data to be written to the char and creates an Option<CharacteristicReader>.
                         reader_opt = Some(req.accept()?);
+
+                        //Receive the newly written data, stores it in a varible and prints it.
+                        let new_data = reader_opt.unwrap().recv();
+                        println!("[New Data] {:?}", new_data);
                         
 
                         
                     },
-                    Some(CharacteristicControlEvent::Notify(notifier)) => {
-                        println!("Accepting notify request event with MTU {}", notifier.mtu());
-                        writer_opt = Some(notifier);
-                    },
                     None => break,
+                    _ => break,
                 }
             },
             read_res = async {
@@ -176,7 +177,7 @@ async fn main() -> bluer::Result<()> {
             }
         }
     }
-*/
+
     println!("Removing service and advertisement");
     drop(app_handle);
     drop(adv_handle);
