@@ -59,45 +59,29 @@ async fn main() -> bluer::Result<()> {
         write: Some(CharacteristicWrite {
             write: true,
             write_without_response: true,
-            method: CharacteristicWriteMethod::Fun(Box::new(move |new_value, req: CharacteristicWriteIoRequest | {
-                let reader_opt = req.accept();
-
-
-                
-                println!("{:?}", &new_value);
-                Ok(())
-            }
-            .boxed()
-        )),
+            method: CharacteristicWriteMethod::Io,
 
             ..Default::default()
         }),
         control_handle: char_handle,
         ..Default::default()
     };
-    
+/*    
     //Creates the steer characteristic with a write method.
     let steer_char = Characteristic {
         uuid: uuid::Uuid::from_u128(0xF00DC0DE00001),
         write: Some(CharacteristicWrite {
             write: true,
             write_without_response: true,
-            method: CharacteristicWriteMethod::Fun(Box::new(move |new_value, req: CharacteristicWriteIoRequest | {
-                let reader_opt = req.accept();
-
-
-                
-                println!("{:?}", &new_value);
-                Ok(())
-            }
-            .boxed()
-        )),
-
+            method: CharacteristicWriteMethod::Io,
             ..Default::default()
         }),
         control_handle: char_handle,
         ..Default::default()
     };
+ 
+*/ 
+
     //Creates the primary GATT Application to hold and handle the characteristics.
     let app = Application {
         services: vec![Service {
@@ -105,11 +89,12 @@ async fn main() -> bluer::Result<()> {
             primary: true,
             characteristics: vec![
                 drive_char,
-            ],
+         ],
+         ..Default::default()
+        },
+        ],
             ..Default::default()
-        }],
-        ..Default::default()
-    };
+        };
     let app_handle = adapter.serve_gatt_application(app).await?;
 
     //Makes way to exit the application when enter is pressed.
@@ -135,10 +120,9 @@ async fn main() -> bluer::Result<()> {
                         //reader_opt is an Option<CharacteristicReader> with impl to retrive characteristics data.
                         //Accepts the data to be written to the char and creates an Option<CharacteristicReader>.
                         reader_opt = Some(req.accept()?);
-
                         //Receive the newly written data, stores it in a varible and prints it.
-                        let new_data = reader_opt.unwrap().recv();
-                        println!("[New Data] {:?}", new_data);
+                        //let new_data = &reader_opt.unwrap().try_recv();
+                       // println!("[New Data] {:?}", new_data);
                         
 
                         
@@ -150,7 +134,10 @@ async fn main() -> bluer::Result<()> {
             read_res = async {
                 match &mut reader_opt {
                     Some(reader) if writer_opt.is_some() => reader.read(&mut read_buf).await,
-                    _ => future::pending().await,
+                    _ => { 
+                        println!("[Critical] For some reason the reader was suffed and the program is now pending forever.");
+                        future::pending().await
+                    },
                 }
             } => {
                 match read_res {
@@ -182,6 +169,5 @@ async fn main() -> bluer::Result<()> {
     drop(app_handle);
     drop(adv_handle);
     sleep(Duration::from_secs(1)).await;
-
     Ok(())
-}
+ }
