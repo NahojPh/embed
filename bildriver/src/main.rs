@@ -120,6 +120,7 @@ async fn main() -> bluer::Result<()> {
                         //reader_opt is an Option<CharacteristicReader> with impl to retrive characteristics data.
                         //Accepts the data to be written to the char and creates an Option<CharacteristicReader>.
                         reader_opt = Some(req.accept()?);
+                        println!("{:?}", reader_opt.unwrap().try_recv().unwrap());
                         //Receive the newly written data, stores it in a varible and prints it.
                         //let new_data = &reader_opt.unwrap().try_recv();
                        // println!("[New Data] {:?}", new_data);
@@ -131,6 +132,7 @@ async fn main() -> bluer::Result<()> {
                     _ => break,
                 }
             },
+            /*
             read_res = async {
                 match &mut reader_opt {
                     Some(reader) if writer_opt.is_some() => reader.read(&mut read_buf).await,
@@ -164,6 +166,7 @@ async fn main() -> bluer::Result<()> {
                     }
                 }
             }
+            */
         }
     }
 
