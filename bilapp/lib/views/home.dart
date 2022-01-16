@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
+import 'package:bilapp/widgets/drive_controller.dart';
+
+import 'dart:convert';
+
 FlutterBlue flutterBlue = FlutterBlue.instance;
 
 
@@ -13,11 +17,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-
+  //ModalRoute.of(context)?.settings.arguments
+  
   @override
   Widget build(BuildContext context) {
-    
+
+    BluetoothCharacteristic char_data = ModalRoute.of(context)?.settings.arguments as BluetoothCharacteristic ;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -32,7 +37,7 @@ class _HomeState extends State<Home> {
                   InkWell(
                     child: const Icon(Icons.bluetooth),
                     onTap: () async {
-                      if ( await flutterBlue.isAvailable && await flutterBlue.isOn) {
+                      if (await flutterBlue.isAvailable && await flutterBlue.isOn) {
                         Navigator.pushNamed(context, "/scanner");
                       }
                       else {
@@ -56,12 +61,11 @@ class _HomeState extends State<Home> {
                   const SizedBox(width: 25),
                 ],
               ),
-              TextButton(
-                child: const Text("hello yes"),
-                onPressed: () async {
-                  
-                },
-              )
+              const SizedBox(height: 50),
+              ElevatedButton(onPressed: () async {
+                print(utf8.decode(await char_data.read()));
+              }, child: null),
+              DriveController(),
             ],
           ),
         ),

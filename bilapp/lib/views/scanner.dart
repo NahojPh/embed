@@ -54,6 +54,7 @@ class _ScannerState extends State<Scanner> {
                 for (ScanResult r in snapshot.data!) {
                   devices += [DevicePicker(r)];
                 }
+                
 
                
               return Container(

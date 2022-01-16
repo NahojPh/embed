@@ -27,6 +27,7 @@ class _DevicePickerState extends State<DevicePicker> {
           backgroundColor: MaterialStateProperty.all(Colors.transparent)
         ),
         onPressed: () async {
+          await flutterBlue.connectedDevices.then((value) => value.forEach((element) {element.disconnect();}));
           if (widget.scanResult.advertisementData.connectable) {
             await widget.scanResult.device.connect()
             .onError((error, stackTrace) {
@@ -41,12 +42,23 @@ class _DevicePickerState extends State<DevicePicker> {
                   content: Text("Connected to ${widget.scanResult.device.name}")
                 ),
               );
-              /*
+              
               var servs = await widget.scanResult.device.discoverServices();
-              var val = await servs.first.characteristics.first.read();
-              print(utf8.decode(val));
-              */
-              Navigator.popAndPushNamed(context, "/home");
+              if (servs.first.characteristics.isNotEmpty) {
+                Navigator.pushReplacementNamed(context, "/home", arguments: servs.first.characteristics.first); 
+              }
+              else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "The amount of characteristics on the peripheral seems to be less than one.",
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    )
+                  )
+                );
+              }
             });
           }
 
