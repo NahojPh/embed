@@ -135,27 +135,29 @@ async fn main() -> bluer::Result<()> {
                 match &mut reader_opt {
                     Some(reader) if writer_opt.is_some() => reader.read(&mut read_buf).await,
                     _ => { 
-                        println!("[Critical] For some reason the reader was suffed and the program is now pending forever.");
-                        future::pending().await
+                        println!("[Critical] For some reason the reader was suffed and the program is currently not pending forever.");
+                        //future::pending().await
                     },
                 }
             } => {
+                //Here is where our written data is located to and where we are suspposed to use it.
                 match read_res {
+                    //This means that we got a empty write which terminates the CharacteristicReader
                     Ok(0) => {
                         println!("Read stream ended");
                         reader_opt = None;
                     }
+                    //This is where we can use our data if its valid. Aka is more than 0 bytes.
                     Ok(n) => {
                         let value = read_buf[..n].to_vec();
-                        println!("Echoing {} bytes: {:x?} ... {:x?}", value.len(), &value[0..4.min(value.len())], &value[value.len().saturating_sub(4) ..]);
-                        if value.len() < 512 {
-                            println!();
-                        }
+                        println!("{:?}", value);
+                        
                         if let Err(err) = writer_opt.as_mut().unwrap().write_all(&value).await {
                             println!("Write failed: {}", &err);
                             writer_opt = None;
                         }
                     }
+                    //Incase error occurs.
                     Err(err) => {
                         println!("Read stream error: {}", &err);
                         reader_opt = None;
