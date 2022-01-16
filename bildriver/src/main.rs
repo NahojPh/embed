@@ -55,7 +55,7 @@ async fn main() -> bluer::Result<()> {
 
     //Creates a write characteristic.
     let drive_char = Characteristic {
-        uuid: uuid::Uuid::from_u128(0xF00DC0DE00002),
+        uuid: CHARACTERISTIC_UUID,
         write: Some(CharacteristicWrite {
             write: true,
             write_without_response: true,
@@ -102,7 +102,7 @@ async fn main() -> bluer::Result<()> {
     let stdin = BufReader::new(tokio::io::stdin());
     let mut lines = stdin.lines();
 
-    let mut read_buf = Vec::new();
+    let mut read_buf: Vec<u8> = Vec::new();
     let mut reader_opt: Option<CharacteristicReader> = None;
     let mut writer_opt: Option<CharacteristicWriter> = None;
     
@@ -116,15 +116,13 @@ async fn main() -> bluer::Result<()> {
                 match evt {
                     Some(CharacteristicControlEvent::Write(req)) => {
                         println!("Accepting write request event with MTU {}", req.mtu());
-                        read_buf = vec![0; req.mtu()];
+                        //read_buf = vec![0; req.mtu()];
                         //reader_opt is an Option<CharacteristicReader> with impl to retrive characteristics data.
                         //Accepts the data to be written to the char and creates an Option<CharacteristicReader>.
                         reader_opt = Some(req.accept()?);
-                        println!("{:?}", reader_opt.unwrap().try_recv().unwrap());
-                        //Receive the newly written data, stores it in a varible and prints it.
-                        //let new_data = &reader_opt.unwrap().try_recv();
-                       // println!("[New Data] {:?}", new_data);
-                        
+                        read_buf = reader_opt.unwrap().recv().await.unwrap();
+                        println!("{:?}", read_buf);
+
 
                         
                     },
