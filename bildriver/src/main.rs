@@ -1,5 +1,6 @@
 #![allow(unused_imports)]
 
+
 use bluer::{
     adv::Advertisement,
     gatt::{
@@ -17,6 +18,8 @@ use tokio::{
     io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader},
     time::sleep,
 };
+
+
 /// Service UUID for GATT example.
 const SERVICE_UUID: uuid::Uuid = uuid::Uuid::from_u128(0xFEEDC0DE00002);
 
@@ -33,11 +36,11 @@ async fn main() -> bluer::Result<()> {
 
     //Finds the first adapter and initialize a interface with it then powering it on.
     let adapter_names = session.adapter_names().await?;
-    let adapter_name = adapter_names.first().expect("No Bluetooth adapter present");
+    let adapter_name = adapter_names.first().expect(format!("{} [Info] No Bluetooth adapter present", line!()));
     let adapter = session.adapter(adapter_name)?;
     adapter.set_powered(true).await?;
 
-    println!("Advertising on Bluetooth adapter {} with address {}", &adapter_name, adapter.address().await?);
+    println!("{} [Info] Advertising on Bluetooth adapter {} with address {}", line!(), &adapter_name, adapter.address().await?);
     let le_advertisement = Advertisement {
         service_uuids: vec![SERVICE_UUID].into_iter().collect(),
         discoverable: Some(true),
@@ -46,11 +49,11 @@ async fn main() -> bluer::Result<()> {
     };
     //Creates an advertise object and starts advertise incase it finds a valid le_advertisement.
     let adv_handle = adapter.advertise(le_advertisement).await
-        .expect("Could not advertise the le_advertisement object.");
+        .expect(format!("{} [Error] Could not advertise the le_advertisement object.", line!()));
         
     
 
-    println!("Serving Bil driver service on Bluetooth adapter {}", &adapter_name);
+    println!("{} [Info] Serving Bil driver service on Bluetooth adapter {}",line!(), &adapter_name);
     let (char_control, char_handle) = characteristic_control();
 
     //Creates a write characteristic.
@@ -91,14 +94,14 @@ async fn main() -> bluer::Result<()> {
                 drive_char,
          ],
          ..Default::default()
-        },
+        },?
         ],
             ..Default::default()
         };
     let app_handle = adapter.serve_gatt_application(app).await?;
 
     //Makes way to exit the application when enter is pressed.
-    println!("Bil driver service is ready. Press enter to quit.");
+    println!("{} [Info] Bil driver service is ready. Press enter to quit.", line!());
     let stdin = BufReader::new(tokio::io::stdin());
     let mut lines = stdin.lines();
 
@@ -115,13 +118,25 @@ async fn main() -> bluer::Result<()> {
             evt = char_control.next() => {
                 match evt {
                     Some(CharacteristicControlEvent::Write(req)) => {
-                        println!("Accepting write request event with MTU {}", req.mtu());
+                        println!("{} [Info] Accepting write request event with MTU {}", line!(), req.mtu());
                         //read_buf = vec![0; req.mtu()];
                         //reader_opt is an Option<CharacteristicReader> with impl to retrive characteristics data.
                         //Accepts the data to be written to the char and creates an Option<CharacteristicReader>.
                         reader_opt = Some(req.accept()?);
                         read_buf = reader_opt.unwrap().recv().await.unwrap();
+                        
+                        if read_buf.len() < 2 {
+                            println!("{} [Warning] The incomming write request was smaler than 2", line!());
+                            return;
+                        }
+
+                        read_buf[0]; //Left wheel
+                        read_buf[1]; //Right wheel
+
+                        
+
                         println!("{:?}", read_buf);
+                        
 
 
                         
