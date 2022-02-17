@@ -19,6 +19,11 @@ use tokio::{
     time::sleep,
 };
 
+use rppal::pwm::{
+    Channel,
+    Pwm, self,
+};
+
 
 /// Service UUID for GATT example.
 const SERVICE_UUID: uuid::Uuid = uuid::Uuid::from_u128(0xFEEDC0DE00002);
@@ -53,9 +58,22 @@ async fn main() -> bluer::Result<()> {
         
     
 
-    println!("{} [Info] Serving Bil driver service on Bluetooth adapter {}",line!(), &adapter_name);
+    println!("{} [Info] Serving Bil driver service on Bluetooth adapter {}", line!(), &adapter_name);
     let (char_control, char_handle) = characteristic_control();
 
+    let pwm0 = Pwm::new(Channel::Pwm0);
+    if pwm0.is_err() {
+        println!("{} [Error] The creation of pwm0 retuned an error", line!());
+        init_close(app_handle, adv_handle);
+        Ok(())
+    }
+    let pwm1 = Pwm::new(Channel::Pwm0);
+    if pwm1.is_err() {
+        println!("{} [Error] The creation of pwm1 retuned an error", line!());
+        init_close(app_handle, adv_handle);
+        Ok(())
+    }
+    
     //Creates a write characteristic.
     let drive_char = Characteristic {
         uuid: CHARACTERISTIC_UUID,
@@ -186,9 +204,18 @@ async fn main() -> bluer::Result<()> {
         }
     }
 
+    
+
+    init_close(app_handle, adv_handle);
+    sleep(Duration::from_secs(1)).await;
+    Ok(())
+ }
+
+ fn init_close(
+    app_handle: ApplicationHandle,
+    adv_handle: AdvertisementHandle,
+ ) {
     println!("Removing service and advertisement");
     drop(app_handle);
     drop(adv_handle);
-    sleep(Duration::from_secs(1)).await;
-    Ok(())
  }
