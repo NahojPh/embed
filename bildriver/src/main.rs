@@ -36,7 +36,7 @@ async fn main() -> bluer::Result<()> {
 
     //Finds the first adapter and initialize a interface with it then powering it on.
     let adapter_names = session.adapter_names().await?;
-    let adapter_name = adapter_names.first().expect(format!("{} [Info] No Bluetooth adapter present", line!()));
+    let adapter_name = adapter_names.first().expect(format!("{} [Error] No Bluetooth adapter present", line!()));
     let adapter = session.adapter(adapter_name)?;
     adapter.set_powered(true).await?;
 
@@ -130,8 +130,11 @@ async fn main() -> bluer::Result<()> {
                             return;
                         }
 
-                        read_buf[0]; //Left wheel
-                        read_buf[1]; //Right wheel
+                        //read_buf[0]; //Left wheel
+                        //read_buf[1]; //Right wheel
+
+                        
+                        //0 1 
 
                         
 
