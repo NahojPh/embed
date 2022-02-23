@@ -61,18 +61,25 @@ async fn main() -> bluer::Result<()> {
     println!("{} [Info] Serving Bil driver service on Bluetooth adapter {}", line!(), &adapter_name);
     let (char_control, char_handle) = characteristic_control();
 
+
+    //Change to with_frequency
     let pwm0 = Pwm::new(Channel::Pwm0);
     if pwm0.is_err() {
         println!("{} [Error] The creation of pwm0 retuned an error", line!());
         init_close(app_handle, adv_handle);
         Ok(())
     }
-    let pwm1 = Pwm::new(Channel::Pwm0);
+    pwm0.enable();
+    println!("{}, [Info] Pwm0 is now enabled for use", line!());
+    let pwm1 = Pwm::new(Channel::Pwm1);
     if pwm1.is_err() {
         println!("{} [Error] The creation of pwm1 retuned an error", line!());
         init_close(app_handle, adv_handle);
         Ok(())
     }
+    pwm1.enable();
+    println!("{}, [Info] Pwm1 is now enabled for use", line!());
+    //TODO enable the pwm's before use.
     
     //Creates a write characteristic.
     let drive_char = Characteristic {
@@ -150,10 +157,24 @@ async fn main() -> bluer::Result<()> {
 
                         //read_buf[0]; //Left wheel
                         //read_buf[1]; //Right wheel
-
                         
                         //0 1 
+                        
+                        let pwm0_duty: f64 = ((read_buf[0] * 4) / 1024) as f64;
+                        let pwm1_duty: f64 = ((read_buf[0] * 4) / 1024) as f64;
 
+                        if pwm0.duty_cycle().unwrap() != pwm0_duty {
+                            pwm0.set_duty_cycle(pwm0_duty);
+                            println1("{} [Data] New pwm0 value: {}", line!(), pwm0_duty);
+                        }
+                        if pwm1.duty_cycle().unwrap() != pwm1_duty {
+                            pwm1.set_duty_cycle(pwm1_duty);
+                            println1("{} [Data] New pwm1 value: {}", line!(), pwm1_duty);
+                        }
+
+                        
+                        
+                        
                         
 
                         println!("{:?}", read_buf);
