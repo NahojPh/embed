@@ -41,11 +41,13 @@ async fn main() -> bluer::Result<()> {
 
     //Finds the first adapter and initialize a interface with it then powering it on.
     let adapter_names = session.adapter_names().await?;
-    let adapter_name = adapter_names.first().expect(format!("{} [Error] No Bluetooth adapter present", line!()));
+    let adapter_name = adapter_names.first().expect(format!("{} [Error] No Bluetooth adapter present", line!()).as_str());
     let adapter = session.adapter(adapter_name)?;
     adapter.set_powered(true).await?;
 
-    println!("{} [Info] Advertising on Bluetooth adapter {} with address {}", line!(), &adapter_name, adapter.address().await?);
+    println!("{} [Info] Advertising on Bluetooth adapter {} with address {}", line!(), &adapter_name, adapter.address().await
+    .expect(format!("{} [Error] Could not fetch the adapter adress", line!()).as_str()));
+
     let le_advertisement = Advertisement {
         service_uuids: vec![SERVICE_UUID].into_iter().collect(),
         discoverable: Some(true),
@@ -54,7 +56,7 @@ async fn main() -> bluer::Result<()> {
     };
     //Creates an advertise object and starts advertise incase it finds a valid le_advertisement.
     let adv_handle = adapter.advertise(le_advertisement).await
-        .expect(format!("{} [Error] Could not advertise the le_advertisement object.", line!()));
+        .expect(format!("{} [Error] Could not advertise the le_advertisement object.", line!()).as_str());
         
     
 
@@ -63,22 +65,25 @@ async fn main() -> bluer::Result<()> {
 
 
     //Change to with_frequency
-    let pwm0 = Pwm::new(Channel::Pwm0);
-    if pwm0.is_err() {
+    /*
+    if Pwm::new(Channel::Pwm0).is_err() {
         println!("{} [Error] The creation of pwm0 retuned an error", line!());
-        init_close(app_handle, adv_handle);
         Ok(())
     }
-    pwm0.enable();
-    println!("{}, [Info] Pwm0 is now enabled for use", line!());
-    let pwm1 = Pwm::new(Channel::Pwm1);
-    if pwm1.is_err() {
+    */
+    let pwm0 = Pwm::new(Channel::Pwm0).unwrap();
+    //pwm0.enable();
+    //println!("{}, [Info] Pwm0 is now enabled for use", line!());
+    /*
+    if Pwm::new(Channel::Pwm1).is_err() {
         println!("{} [Error] The creation of pwm1 retuned an error", line!());
-        init_close(app_handle, adv_handle);
         Ok(())
     }
-    pwm1.enable();
-    println!("{}, [Info] Pwm1 is now enabled for use", line!());
+    */
+    let pwm1 = Pwm::new(Channel::Pwm1).unwrap();
+
+    //pwm1.enable();
+    //println!("{}, [Info] Pwm1 is now enabled for use", line!());
     //TODO enable the pwm's before use.
     
     //Creates a write characteristic.
@@ -119,11 +124,11 @@ async fn main() -> bluer::Result<()> {
                 drive_char,
          ],
          ..Default::default()
-        },?
+        }?
         ],
             ..Default::default()
         };
-    let app_handle = adapter.serve_gatt_application(app).await?;
+    let app_handle = adapter.serve_gatt_application(app).await.expect(format!("{} [Error] Could not serve the gatt application", line!()).as_str());
 
     //Makes way to exit the application when enter is pressed.
     println!("{} [Info] Bil driver service is ready. Press enter to quit.", line!());
@@ -165,11 +170,11 @@ async fn main() -> bluer::Result<()> {
 
                         if pwm0.duty_cycle().unwrap() != pwm0_duty {
                             pwm0.set_duty_cycle(pwm0_duty);
-                            println1("{} [Data] New pwm0 value: {}", line!(), pwm0_duty);
+                            println!("{} [Data] New pwm0 value: {}", line!(), pwm0_duty);
                         }
                         if pwm1.duty_cycle().unwrap() != pwm1_duty {
                             pwm1.set_duty_cycle(pwm1_duty);
-                            println1("{} [Data] New pwm1 value: {}", line!(), pwm1_duty);
+                            println!("{} [Data] New pwm1 value: {}", line!(), pwm1_duty);
                         }
 
                         
@@ -179,7 +184,7 @@ async fn main() -> bluer::Result<()> {
 
                         println!("{:?}", read_buf);
                         
-
+                        Ok(())
 
                         
                     },
@@ -227,16 +232,10 @@ async fn main() -> bluer::Result<()> {
 
     
 
-    init_close(app_handle, adv_handle);
+    println!("Removing service and advertisement");
+    drop(app_handle);
+    drop(adv_handle);
     sleep(Duration::from_secs(1)).await;
     Ok(())
  }
 
- fn init_close(
-    app_handle: ApplicationHandle,
-    adv_handle: AdvertisementHandle,
- ) {
-    println!("Removing service and advertisement");
-    drop(app_handle);
-    drop(adv_handle);
- }
