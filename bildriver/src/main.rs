@@ -37,16 +37,17 @@ const CHARACTERISTIC_UUID: uuid::Uuid = uuid::Uuid::from_u128(0xF00DC0DE00002);
 async fn main() -> bluer::Result<()> {
 
     //Creates a connection session with the bluetooth daemon.
-    let session = bluer::Session::new().await?;
+    let session = bluer::Session::new().await.expect("Bluer could not create a session which is bad.");
 
     //Finds the first adapter and initialize a interface with it then powering it on.
-    let adapter_names = session.adapter_names().await?;
-    let adapter_name = adapter_names.first().expect(format!("{} [Error] No Bluetooth adapter present", line!()).as_str());
+    let adapter_names = session.adapter_names().await.expect("Could not even find an adapter."); //Might need to do .unwrap because it doesnt seem to happen
+    let adapter_name = adapter_names.first()
+        .expect(format!("{} [Error] No Bluetooth adapter present", line!()).as_str());
     let adapter = session.adapter(adapter_name)?;
     adapter.set_powered(true).await?;
 
     println!("{} [Info] Advertising on Bluetooth adapter {} with address {}", line!(), &adapter_name, adapter.address().await
-    .expect(format!("{} [Error] Could not fetch the adapter adress", line!()).as_str()));
+        .expect(format!("{} [Error] Could not fetch the adapter adress", line!()).as_str()));
 
     let le_advertisement = Advertisement {
         service_uuids: vec![SERVICE_UUID].into_iter().collect(),
@@ -99,21 +100,7 @@ async fn main() -> bluer::Result<()> {
         control_handle: char_handle,
         ..Default::default()
     };
-/*    
-    //Creates the steer characteristic with a write method.
-    let steer_char = Characteristic {
-        uuid: uuid::Uuid::from_u128(0xF00DC0DE00001),
-        write: Some(CharacteristicWrite {
-            write: true,
-            write_without_response: true,
-            method: CharacteristicWriteMethod::Io,
-            ..Default::default()
-        }),
-        control_handle: char_handle,
-        ..Default::default()
-    };
- 
-*/ 
+
 
     //Creates the primary GATT Application to hold and handle the characteristics.
     let app = Application {
@@ -166,13 +153,13 @@ async fn main() -> bluer::Result<()> {
                         //0 1 
                         
                         let pwm0_duty: f64 = ((read_buf[0] * 4) / 1024) as f64;
-                        let pwm1_duty: f64 = ((read_buf[0] * 4) / 1024) as f64;
+                        let pwm1_duty: f64 = ((read_buf[1] * 4) / 1024) as f64;
 
-                        if pwm0.duty_cycle().unwrap() != pwm0_duty {
+                        if pwm0.duty_cycle().unwrap_or(pwm0_duty) != pwm0_duty {
                             pwm0.set_duty_cycle(pwm0_duty);
                             println!("{} [Data] New pwm0 value: {}", line!(), pwm0_duty);
                         }
-                        if pwm1.duty_cycle().unwrap() != pwm1_duty {
+                        if pwm1.duty_cycle().unwrap_or(pwm1_duty) != pwm1_duty {
                             pwm1.set_duty_cycle(pwm1_duty);
                             println!("{} [Data] New pwm1 value: {}", line!(), pwm1_duty);
                         }
@@ -188,45 +175,11 @@ async fn main() -> bluer::Result<()> {
 
                         
                     },
-                    None => break,
+                    None => break, // This might be a problem and should be changed to a continue.
                     _ => break,
                 }
             },
-            /*
-            read_res = async {
-                match &mut reader_opt {
-                    Some(reader) if writer_opt.is_some() => reader.read(&mut read_buf).await,
-                    _ => { 
-                        println!("[Critical] For some reason the reader was suffed and the program is currently not pending forever.");
-                        //future::pending().await
-                    },
-                }
-            } => {
-                //Here is where our written data is located to and where we are suspposed to use it.
-                match read_res {
-                    //This means that we got a empty write which terminates the CharacteristicReader
-                    Ok(0) => {
-                        println!("Read stream ended");
-                        reader_opt = None;
-                    }
-                    //This is where we can use our data if its valid. Aka is more than 0 bytes.
-                    Ok(n) => {
-                        let value = read_buf[..n].to_vec();
-                        println!("{:?}", value);
-                        
-                        if let Err(err) = writer_opt.as_mut().unwrap().write_all(&value).await {
-                            println!("Write failed: {}", &err);
-                            writer_opt = None;
-                        }
-                    }
-                    //Incase error occurs.
-                    Err(err) => {
-                        println!("Read stream error: {}", &err);
-                        reader_opt = None;
-                    }
-                }
-            }
-            */
+      
         }
     }
 
