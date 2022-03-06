@@ -34,7 +34,7 @@ const CHARACTERISTIC_UUID: uuid::Uuid = uuid::Uuid::from_u128(0xF00DC0DE00002);
 
 
 #[tokio::main]
-async fn main() -> bluer::Result<()> {
+async fn main() {
 
     //Creates a connection session with the bluetooth daemon.
     let session = bluer::Session::new().await.expect("Bluer could not create a session which is bad.");
@@ -171,7 +171,7 @@ async fn main() -> bluer::Result<()> {
 
                         println!("{:?}", read_buf);
                         
-                        Ok(())
+                        ()
 
                         
                     },
@@ -189,6 +189,5 @@ async fn main() -> bluer::Result<()> {
     drop(app_handle);
     drop(adv_handle);
     sleep(Duration::from_secs(1)).await;
-    Ok(())
  }
 
