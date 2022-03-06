@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
 
-    BluetoothCharacteristic char_data = ModalRoute.of(context)?.settings.arguments as BluetoothCharacteristic ;
+    BluetoothCharacteristic charData = ModalRoute.of(context)?.settings.arguments as BluetoothCharacteristic ;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -61,16 +61,9 @@ class _HomeState extends State<Home> {
                   const SizedBox(width: 25),
                 ],
               ),
-              const SizedBox(height: 50),
-              ElevatedButton(onPressed: () async {
-                await char_data.write([5, 4]);
-              }, child: null),
-                            const SizedBox(height: 50),
-              ElevatedButton(onPressed: () async {
-                print(char_data.properties.write);
-                
-              }, child: null),
-              DriveController(),
+              const SizedBox(height: 70),
+
+              DriveController(charData),
             ],
           ),
         ),
