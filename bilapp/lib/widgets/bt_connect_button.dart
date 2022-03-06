@@ -45,7 +45,16 @@ class _DevicePickerState extends State<DevicePicker> {
               
               var servs = await widget.scanResult.device.discoverServices();
               if (servs.first.characteristics.isNotEmpty) {
-                Navigator.pushReplacementNamed(context, "/home", arguments: servs.first.characteristics.first); 
+                /*
+                print("Serv legnth: ${servs.length}");
+                for (var item in servs) {
+                  for (var i = 0; i < item.characteristics.length; i++) {
+                    print("Write: ${item.characteristics[i].properties.write} Read: ${item.characteristics[i].properties.read} Length: ${item.characteristics.length}");
+                  }
+                  
+                }
+                */
+                Navigator.pushReplacementNamed(context, "/home", arguments: servs.last.characteristics.last); 
               }
               else {
                 ScaffoldMessenger.of(context).showSnackBar(

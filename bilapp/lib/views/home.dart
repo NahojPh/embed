@@ -63,7 +63,12 @@ class _HomeState extends State<Home> {
               ),
               const SizedBox(height: 50),
               ElevatedButton(onPressed: () async {
-                print(utf8.decode(await char_data.read()));
+                await char_data.write([5, 4]);
+              }, child: null),
+                            const SizedBox(height: 50),
+              ElevatedButton(onPressed: () async {
+                print(char_data.properties.write);
+                
               }, child: null),
               DriveController(),
             ],
