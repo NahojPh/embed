@@ -18,12 +18,12 @@ use tokio::{
     io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader},
     time::sleep,
 };
-
+/*
 use rppal::pwm::{
     Channel,
     Pwm, self,
 };
-
+*/
 
 /// Service UUID for GATT example.
 const SERVICE_UUID: uuid::Uuid = uuid::Uuid::from_u128(0xFEEDC0DE00002);
@@ -72,7 +72,8 @@ async fn main() {
         Ok(())
     }
     */
-    let pwm0 = Pwm::new(Channel::Pwm0).unwrap();
+    
+    //let pwm0 = Pwm::new(Channel::Pwm0).unwrap();
     //pwm0.enable();
     //println!("{}, [Info] Pwm0 is now enabled for use", line!());
     /*
@@ -81,7 +82,7 @@ async fn main() {
         Ok(())
     }
     */
-    let pwm1 = Pwm::new(Channel::Pwm1).unwrap();
+    //let pwm1 = Pwm::new(Channel::Pwm1).unwrap();
 
     //pwm1.enable();
     //println!("{}, [Info] Pwm1 is now enabled for use", line!());
@@ -151,7 +152,7 @@ async fn main() {
                         //read_buf[1]; //Right wheel
                         
                         //0 1 
-                        
+                        /*
                         let pwm0_duty: f64 = ((read_buf[0] * 4) / 1024) as f64;
                         let pwm1_duty: f64 = ((read_buf[1] * 4) / 1024) as f64;
 
@@ -163,7 +164,7 @@ async fn main() {
                             pwm1.set_duty_cycle(pwm1_duty);
                             println!("{} [Data] New pwm1 value: {}", line!(), pwm1_duty);
                         }
-
+                        */
                         
                         
                         
