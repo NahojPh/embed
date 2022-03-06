@@ -40,11 +40,11 @@ async fn main() -> bluer::Result<()> {
     let session = bluer::Session::new().await.expect("Bluer could not create a session which is bad.");
 
     //Finds the first adapter and initialize a interface with it then powering it on.
-    let adapter_names = session.adapter_names().await.expect("Could not even find an adapter."); //Might need to do .unwrap because it doesnt seem to happen
+    let adapter_names = session.adapter_names().await.expect("Could not even find an adapter.");
     let adapter_name = adapter_names.first()
         .expect(format!("{} [Error] No Bluetooth adapter present", line!()).as_str());
-    let adapter = session.adapter(adapter_name)?;
-    adapter.set_powered(true).await?;
+    let adapter = session.adapter(adapter_name).expect("Could not create an interface with the adapter.");
+    adapter.set_powered(true).await.expect("Could not give power to bt adapter.");
 
     println!("{} [Info] Advertising on Bluetooth adapter {} with address {}", line!(), &adapter_name, adapter.address().await
         .expect(format!("{} [Error] Could not fetch the adapter adress", line!()).as_str()));
@@ -111,7 +111,7 @@ async fn main() -> bluer::Result<()> {
                 drive_char,
          ],
          ..Default::default()
-        }?
+        }
         ],
             ..Default::default()
         };
@@ -139,7 +139,7 @@ async fn main() -> bluer::Result<()> {
                         //read_buf = vec![0; req.mtu()];
                         //reader_opt is an Option<CharacteristicReader> with impl to retrive characteristics data.
                         //Accepts the data to be written to the char and creates an Option<CharacteristicReader>.
-                        reader_opt = Some(req.accept()?);
+                        reader_opt = Some(req.accept().expect("Could not accept incomming bt request."));
                         read_buf = reader_opt.unwrap().recv().await.unwrap();
                         
                         if read_buf.len() < 2 {
