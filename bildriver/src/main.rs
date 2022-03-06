@@ -95,7 +95,10 @@ async fn main() {
             write: true,
             write_without_response: true,
             method: CharacteristicWriteMethod::Io,
-
+            ..Default::default()
+        }),
+        read: Some(CharacteristicRead {
+            read: false,
             ..Default::default()
         }),
         control_handle: char_handle,
