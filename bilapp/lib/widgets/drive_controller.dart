@@ -34,8 +34,8 @@ class _DriveControllerState extends State<DriveController> {
   }
 */
   @override
-  Widget build(BuildContext context) {
-
+  Widget build(BuildContext context) async {
+    await widget.charData.write(wheelControllerList);
 
     return SizedBox(
       child: Container(
