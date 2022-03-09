@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:bilapp/models/bt_services.dart';
@@ -17,8 +20,10 @@ class DriveController extends StatefulWidget {
 class _DriveControllerState extends State<DriveController> {
 
   List<int> wheelControllerList = [0, 0];
-  double rControllerYOffset = 0.0;
-  double lControllerYOffset = 0.0;
+  bool isIgnore = false;
+  double rValue = 0;
+  double lValue = 0;
+
 
 /*
   @override
@@ -34,69 +39,56 @@ class _DriveControllerState extends State<DriveController> {
   }
 */
   @override
-  Widget build(BuildContext context) async {
-    await widget.charData.write(wheelControllerList);
+  Widget build(BuildContext context) {
+    //sleep(const Duration(milliseconds: 500));
+    
 
-    return SizedBox(
-      child: Container(
-        color: Colors.red,
-        width: 800,
-        height: 250,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            GestureDetector(
-              onPanUpdate: (details) {
-                print(rControllerYOffset + details.delta.dy);
-                setState(() {
-                  rControllerYOffset = max(-85, rControllerYOffset + (details.delta.dy * 0.6));
-                  rControllerYOffset = min(85, rControllerYOffset + (details.delta.dy * 0.6));
-                });
-                 wheelControllerList[1] = rControllerYOffset.toInt().abs();
-              },
-              onPanEnd: (details) => setState(() => 
-                rControllerYOffset = 0.0
+    return IgnorePointer(
+      ignoring: isIgnore,
+      child: SizedBox(
+        child: Container(
+          color: Colors.red,
+          width: 800,
+          height: 250,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              RotatedBox(
+                quarterTurns: 3,
+                child: Slider(
+                  value: lValue,
+                  min: 0.0,
+                  max: 255,
+                  divisions: 4,
+                  onChanged: (newValue) {
+                    wheelControllerList[0] = lValue.toInt();
+                    widget.charData.write(wheelControllerList, withoutResponse: false);  
+                    setState(() => lValue = newValue);
+                  }
+                ),
               ),
-              child: Container(
-                color: Colors.blue,
-                height: 250,
-                width: 80,
-                child: Transform.translate(
-                  offset: Offset(0.0, rControllerYOffset),
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.black,
-            
-                  )
-                )
+              RotatedBox(
+                quarterTurns: 3,
+                child: Slider(
+                  value: rValue,
+                  min: 0.0,
+                  max: 255,
+                  divisions: 4,
+                  onChanged: (newValue) {
+                    
+                    wheelControllerList[1] = rValue.toInt();
+                    widget.charData.write(wheelControllerList, withoutResponse: false);
+                    setState(() => rValue = newValue);
+                  }
+                ),
               ),
-            ),
-            GestureDetector(
-              onPanUpdate: (details) {
-                print(lControllerYOffset + details.delta.dy);
-                setState(() {
-                  lControllerYOffset = max(-85, lControllerYOffset + (details.delta.dy * 0.6));
-                  lControllerYOffset = min(85, lControllerYOffset + (details.delta.dy * 0.6));
-                });
-                 wheelControllerList[0] = lControllerYOffset.toInt().abs();
-              },
-              onPanEnd: (details) => setState(() => 
-                lControllerYOffset = 0.0
-              ),
-              child: Container(
-                color: Colors.blue,
-                height: 250,
-                width: 80,
-                child: Transform.translate(
-                  offset: Offset(0.0, lControllerYOffset),
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.black,
-                  )
-                )
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+Future<void> wait() async {  
 }

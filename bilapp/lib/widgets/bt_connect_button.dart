@@ -13,7 +13,19 @@ class DevicePicker extends StatefulWidget {
   State<DevicePicker> createState() => _DevicePickerState();
 }
 
+Future<void> disconnectDevices() async {
+  await flutterBlue.connectedDevices.then((value) => value.forEach((element) {element.disconnect();}));
+}
+
 class _DevicePickerState extends State<DevicePicker> {
+
+
+  @override
+  void initState() {
+    disconnectDevices();
+
+    super.initState();
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -27,8 +39,10 @@ class _DevicePickerState extends State<DevicePicker> {
           backgroundColor: MaterialStateProperty.all(Colors.transparent)
         ),
         onPressed: () async {
+          print("Presed");
           await flutterBlue.connectedDevices.then((value) => value.forEach((element) {element.disconnect();}));
           if (widget.scanResult.advertisementData.connectable) {
+            print("Connectable");
             await widget.scanResult.device.connect()
             .onError((error, stackTrace) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -37,6 +51,7 @@ class _DevicePickerState extends State<DevicePicker> {
                 )
               );
             }).then((value) async {
+              print("here");
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text("Connected to ${widget.scanResult.device.name}")
@@ -45,7 +60,7 @@ class _DevicePickerState extends State<DevicePicker> {
               
               var servs = await widget.scanResult.device.discoverServices();
               if (servs.first.characteristics.isNotEmpty) {
-                /*
+                
                 print("Serv legnth: ${servs.length}");
                 for (var item in servs) {
                   for (var i = 0; i < item.characteristics.length; i++) {
@@ -53,7 +68,8 @@ class _DevicePickerState extends State<DevicePicker> {
                   }
                   
                 }
-                */
+                
+                print("Pushing you..");
                 Navigator.pushReplacementNamed(context, "/home", arguments: servs.last.characteristics.last); 
               }
               else {
