@@ -24,20 +24,20 @@ class _DriveControllerState extends State<DriveController> {
   double rValue = 0;
   double lValue = 0;
 
+  StreamController<List<int>> driveStreamController = StreamController();
 
-/*
+
+
+
+
   @override
-  void initState() async {
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1)).then((value) {
-        widget.charData.write(wheelControllerList);
-        print("Just wrote to charData");
-      });
-      return true;
+  void initState() {
+    driveStreamController.stream.listen((data) {
+      widget.charData.write(data);  
     });
     super.initState();
   }
-*/
+
   @override
   Widget build(BuildContext context) {
     //sleep(const Duration(milliseconds: 500));
@@ -62,7 +62,7 @@ class _DriveControllerState extends State<DriveController> {
                   divisions: 4,
                   onChanged: (newValue) {
                     wheelControllerList[0] = lValue.toInt();
-                    widget.charData.write(wheelControllerList, withoutResponse: false);  
+                    driveStreamController.add(wheelControllerList);
                     setState(() => lValue = newValue);
                   }
                 ),
@@ -75,9 +75,8 @@ class _DriveControllerState extends State<DriveController> {
                   max: 255,
                   divisions: 4,
                   onChanged: (newValue) {
-                    
                     wheelControllerList[1] = rValue.toInt();
-                    widget.charData.write(wheelControllerList, withoutResponse: false);
+                    driveStreamController.add(wheelControllerList);
                     setState(() => rValue = newValue);
                   }
                 ),
