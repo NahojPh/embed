@@ -53,9 +53,43 @@ void driveValueWritten(BLEDevice central, BLECharacteristic car) {
     p = NULL;
   }
   */
-  //String str = String(buf);
-  //Serial.print(str);
+  //Buffers for the L-lane and R-lane.
+  char lBuf[3];
+  char rBuf[3];
+  
+  char divider = ':';
+  int bufSize = sizeof(buf)/sizeof(char);
+  
+  for (int i = 0; i < bufSize; i++) {
+    //To get the index of the divider.
+    if (buf[i] == divider) {
+      //To copy the data until it reached the size limit of lBuf.
+      for (int a = 0; a < sizeof(lBuf)/sizeof(char); a++) {
+        lBuf[a] = buf[a];
+      }
+      //a is initially set to i + 1 because we are setting the R-lane and 
+      //the index is pointing at the divider and we need to go to the next one.
+      for (int a = i+1; a < i; a++) {
+        rBuf[a] = buf[a];
+      }
+      break;
+    }
+  }
 
+  int driveSpeed;
+  int steerCont;
   
   
+}
+
+
+int bufferToInt(char* buff) {
+    int sum = 0;
+    //Use the index of the value with sientific notation to create an interger.
+    int buffSize = sizeof(buff)/sizeof(char);
+
+    for (int i = 0; i < buffSize; i++) {
+        sum += (buff[i] * pow(10, buffSize - (i+1)));
+    }
+    return sum;
 }
