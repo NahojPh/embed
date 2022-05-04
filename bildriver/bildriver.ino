@@ -43,16 +43,7 @@ void driveValueWritten(BLEDevice central, BLECharacteristic car) {
   
   char buf[7];
   car.readValue(buf, 7);
-  /*
-   * https://www.best-microcontroller-projects.com/arduino-strtok.html
-  char str*;
-  char *p = buf;
-
-  while ((str = strtok(p, ":")) != "\n"){
-    Serial.println(str);
-    p = NULL;
-  }
-  */
+  
   //Buffers for the L-lane and R-lane.
   char lBuf[3];
   char rBuf[3];
@@ -78,6 +69,15 @@ void driveValueWritten(BLEDevice central, BLECharacteristic car) {
 
   int driveSpeed;
   int steerCont;
+  //Docs: https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
+  //If we have drager the (phone) slider to the left then one pwm gets activated.
+  if (steerCont < (254 / 2)) {
+    
+  }
+  //Otherwise this pwm gets activated.
+  else {
+    
+  }
   
   
 }
@@ -85,7 +85,7 @@ void driveValueWritten(BLEDevice central, BLECharacteristic car) {
 
 int bufferToInt(char* buff) {
     int sum = 0;
-    //Use the index of the value with sientific notation to create an interger.
+    //Use the index of the value with scientific notation to create an interger.
     int buffSize = sizeof(buff)/sizeof(char);
 
     for (int i = 0; i < buffSize; i++) {
