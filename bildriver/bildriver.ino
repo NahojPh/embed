@@ -67,8 +67,8 @@ void driveValueWritten(BLEDevice central, BLECharacteristic car) {
     }
   }
 
-  int driveSpeed;
-  int steerCont;
+  int driveSpeed = bufferToInt(lBuf);
+  int steerCont = bufferToInt(rBuf);
   //Docs: https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
   //If we have drager the (phone) slider to the left then one pwm gets activated.
   if (steerCont < (254 / 2)) {
@@ -79,7 +79,7 @@ void driveValueWritten(BLEDevice central, BLECharacteristic car) {
     
   }
   
-  
+  Serial.println(driveSpeed);
 }
 
 
