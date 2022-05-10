@@ -41,45 +41,48 @@ void loop() {
 
 void driveValueWritten(BLEDevice central, BLECharacteristic car) {
   
-  char buf[7];
+  char buf[8];
   car.readValue(buf, 7);
+  buf[sizeof(buf)/sizeof(char)] = 0;
+
+
+  // https://arduino.stackexchange.com/questions/1013/how-do-i-split-an-incoming-string
+  // Read each command pair 
+  char* command = strtok(buf, ":");
+  while (command != 0)
+  {
+      // Split the command in two values
+      char* separator = strchr(command, ':');
+      if (separator != 0)
+      {
+          // Actually split the string in 2: replace ':' with 0
+          *separator = 0;
+          int driveSpeed = atoi(command);
+          ++separator;
+          int steerCont = atoi(separator);
+
+          Serial.println(driveSpeed);
+          Serial.println(steerCont);
+        
+      }
+  }
+  
   
   //Buffers for the L-lane and R-lane.
-  char lBuf[3];
-  char rBuf[3];
+ // char lBuf[3];
+//  char rBuf[3];
   
-  char divider = ':';
-  int bufSize = sizeof(buf)/sizeof(char);
-  
-  for (int i = 0; i < bufSize; i++) {
-    //To get the index of the divider.
-    if (buf[i] == divider) {
-      //To copy the data until it reached the size limit of lBuf.
-      for (int a = 0; a < sizeof(lBuf)/sizeof(char); a++) {
-        lBuf[a] = buf[a];
-      }
-      //a is initially set to i + 1 because we are setting the R-lane and 
-      //the index is pointing at the divider and we need to go to the next one.
-      for (int a = i+1; a < i; a++) {
-        rBuf[a] = buf[a];
-      }
-      break;
-    }
-  }
+//  char divider = ':';
+//  int bufSize = sizeof(buf)/sizeof(char);
 
-  int driveSpeed = bufferToInt(lBuf);
-  int steerCont = bufferToInt(rBuf);
+//  strtok();
+
+//  int driveSpeed = bufferToInt(lBuf);
+//  int steerCont = bufferToInt(rBuf);
   //Docs: https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
   //If we have drager the (phone) slider to the left then one pwm gets activated.
-  if (steerCont < (254 / 2)) {
-    
-  }
-  //Otherwise this pwm gets activated.
-  else {
-    
-  }
+
   
-  Serial.println(driveSpeed);
 }
 
 
