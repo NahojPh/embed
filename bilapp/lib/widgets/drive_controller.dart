@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 
 import 'package:bilapp/models/bt_services.dart';
+import 'package:bilapp/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -21,22 +23,15 @@ class _DriveControllerState extends State<DriveController> {
 
   List<int> wheelControllerList = [0, 0];
   bool isIgnore = false;
-  double rValue = 0;
+  double rValue = 128;
   double lValue = 0;
 
-  StreamController<List<int>> driveStreamController = StreamController();
+  String value = "";
 
 
 
 
 
-  @override
-  void initState() {
-    driveStreamController.stream.listen((data) {
-      widget.charData.write(data);  
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,24 +54,24 @@ class _DriveControllerState extends State<DriveController> {
                   value: lValue,
                   min: 0.0,
                   max: 255,
-                  divisions: 4,
-                  onChanged: (newValue) {
+                  divisions: 8,
+                  onChanged: (newValue) async {
                     wheelControllerList[0] = lValue.toInt();
-                    driveStreamController.add(wheelControllerList);
+                    await widget.charData.write(utf8.encode("${lValue.floor()}:${rValue.floor()}"));
                     setState(() => lValue = newValue);
                   }
                 ),
               ),
               RotatedBox(
-                quarterTurns: 3,
+                quarterTurns: 0,
                 child: Slider(
                   value: rValue,
                   min: 0.0,
                   max: 255,
-                  divisions: 4,
-                  onChanged: (newValue) {
+                  divisions: 8,
+                  onChanged: (newValue) async {
                     wheelControllerList[1] = rValue.toInt();
-                    driveStreamController.add(wheelControllerList);
+                    await widget.charData.write(utf8.encode("${lValue.floor()}:${rValue.floor()}"));
                     setState(() => rValue = newValue);
                   }
                 ),

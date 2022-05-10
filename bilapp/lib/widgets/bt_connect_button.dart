@@ -57,10 +57,39 @@ class _DevicePickerState extends State<DevicePicker> {
                   content: Text("Connected to ${widget.scanResult.device.name}")
                 ),
               );
-              
+              BluetoothCharacteristic? realBtChar;
               var servs = await widget.scanResult.device.discoverServices();
               if (servs.first.characteristics.isNotEmpty) {
+                for (var s in servs) {
+                  for (var char in s.characteristics) {
+                    if (char.properties.write && char.properties.writeWithoutResponse) {
+                      realBtChar = char;
+                      break;
+                    }
+                    
+                  }
+                }
+                if (realBtChar != null) {
+                  print("Pushing you..");
+                  Navigator.pushReplacementNamed(context, "/home", arguments: servs.last.characteristics.last); 
+                }
+                else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Could not find a characteristic which fit the properties required.",
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      )
+                    )
+                  );
+                }
                 
+                //print("Char list: ${servs.first.characteristics}");
+
+
+                /*
                 print("Serv legnth: ${servs.length}");
                 for (var item in servs) {
                   for (var i = 0; i < item.characteristics.length; i++) {
@@ -68,9 +97,8 @@ class _DevicePickerState extends State<DevicePicker> {
                   }
                   
                 }
-                
-                print("Pushing you..");
-                Navigator.pushReplacementNamed(context, "/home", arguments: servs.last.characteristics.last); 
+                */
+
               }
               else {
                 ScaffoldMessenger.of(context).showSnackBar(
