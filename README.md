@@ -1,6 +1,6 @@
 # Embed
 ---
-Embed is a project name with two smaler projects in it **BilDriver** and **BilApp**
+Embed is a project with two smaler projects in it **BilDriver** and **BilApp**
 
 ## BilDriver
 Bildriver is a arduino project which targets the Arduino nano 33 BLE and is receiving data from BilApp where the format of data is a string with two u8 values separated with a colon ":".
